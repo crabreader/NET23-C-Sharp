@@ -1,9 +1,10 @@
-﻿Console.WriteLine("Enter a number: ");
+﻿Console.WriteLine("What size should the chessboard be? (enter a number): ");
 int num =  Int32.Parse(Console.ReadLine());
 
-// Override default newline behaviour.
+// Override the default newline behaviour.
 Console.Out.NewLine = "";
 
+// Newline for readability.
 Console.WriteLine("\n");
 
 for (int i = 0; i < num; i++)
