@@ -8,7 +8,7 @@
         int boardSize = 8;
         char[,] board = new char[boardSize, boardSize];
 
-        string[] initialBoardState = {"Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1"};
+        string[] initialBoardState = {"Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "a7*", "b7*", "c7*", "d7*", "e7*", "f7*", "g7*", "h7*", "Ra8*", "Nb8*", "Bc8*", "Qd8*", "Ke8*", "Bf8*", "Ng8*", "Rh8*"};
 
         // Override the default newline behaviour.
         Console.Out.NewLine = "";
@@ -17,11 +17,7 @@
         //Console.WriteLine("\n");
 
         CreateBoard(board, boardSize);
-        PrintBoard(board, boardSize);
         PopulateBoard(board, boardSize, initialBoardState);
-
-        Console.WriteLine("\n");
-
         PrintBoard(board, boardSize);
     }
 
@@ -33,11 +29,11 @@
             {
                 if ((i + j) % 2 == 0)
                 {
-                    board[i, j] = '\u25FC';
+                    board[i, j] = '◼';
                 }
                 else
                 {
-                    board[i, j] = '\u25FB';
+                    board[i, j] = '◻';
                 }
             }
         }
@@ -45,7 +41,7 @@
 
     public static void PrintBoard(char[,] board, int boardSize)
     {
-        string spacer = " ";
+        string spacer = "  ";
 
         for (int i = 0; i < boardSize; i++)
         {
@@ -60,28 +56,77 @@
 
     public static char ParsePiece(string str)
     {
+        int length = str.Length;
         char notation = str[0];
         char piece;
 
         switch (notation)
         {
             case 'R':
-                piece = '♖';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♜';
+                }
+                else
+                {
+                    piece = '♖';   
+                }
+
                 break;
             case 'N':
-                piece = '♘';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♞';
+                }
+                else
+                {
+                    piece = '♘';   
+                }            
+
                 break;
             case 'B':
-                piece = '♗';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♝';
+                }
+                else
+                {
+                    piece = '♗';   
+                }    
+
                 break;
             case 'Q':
-                piece = '♕';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♛';
+                }
+                else
+                {
+                    piece = '♕';   
+                }   
+
                 break;
             case 'K':
-                piece = '♔';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♚';
+                }
+                else
+                {
+                    piece = '♔';   
+                }  
+
                 break;
             default:
-                piece = '♙';
+                if (str[length - 1] == '*')
+                {
+                    piece = '♟';
+                }
+                else
+                {
+                    piece = '♙';   
+                }  
+
                 break;
         }
 
@@ -90,10 +135,24 @@
 
     public static (int, int) ParseSquare(string str)
     {
-        char fileNotation = str[1];
-        char rankNotation = str[2];
-        int file;
-        int rank;
+        int file, rank;
+
+        int length = str.Length;
+        int fileNotationPos, rankNotationPos;
+
+        if (str[length - 1] == '*')
+        {
+            fileNotationPos = length - 3;
+            rankNotationPos = length - 2;
+        }
+        else
+        {
+            fileNotationPos = length - 2;
+            rankNotationPos = length - 1;
+        }
+
+        char fileNotation = str[fileNotationPos];
+        char rankNotation = str[rankNotationPos];
 
         switch (fileNotation)
         {
@@ -126,9 +185,9 @@
                 break;
         }
 
-        rank = rankNotation - '0';
+        rank = 9 - (rankNotation - '0');
 
-        return (file, rank);
+        return (rank, file);
     }
 
     public static void PopulateBoard(char[,] board, int boardSize, string[] boardState)
@@ -141,7 +200,7 @@
             square = ParseSquare(str);
             piece = ParsePiece(str);
 
-            board[square.Item1, square.Item2 - 1] = piece;
+            board[square.Item1 - 1, square.Item2] = piece;
         }
     }
 }
