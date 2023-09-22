@@ -2,29 +2,88 @@
 {
     private static void Main(string[] args)
     {
-        // Console.WriteLine("What size should the chessboard be? (enter a number): ");
-        // int num = int.Parse(Console.ReadLine());
+        int boardSizeDefault = 8;
+        string[] boardStateDefault = {"Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "a7*", "b7*", "c7*", "d7*", "e7*", "f7*", "g7*", "h7*", "Ra8*", "Nb8*", "Bc8*", "Qd8*", "Ke8*", "Bf8*", "Ng8*", "Rh8*"};
+        char[,] board = new char[boardSizeDefault, boardSizeDefault]; // The chess board is a 2d array of characters.
 
-        int boardSize = 8;
-        char[,] board = new char[boardSize, boardSize];
 
-        string[] initialBoardState = {"Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "a7*", "b7*", "c7*", "d7*", "e7*", "f7*", "g7*", "h7*", "Ra8*", "Nb8*", "Bc8*", "Qd8*", "Ke8*", "Bf8*", "Ng8*", "Rh8*"};
+        bool exit = false;
+        int userChoice;
 
-        // Newline for readability.
-        //Console.WriteLine("\n");
+        while (!exit)
+        {
+            PrintMenu();
+            userChoice = GetUserChoice();
 
-        CreateBoard(board, boardSize);
-        PopulateBoard(board, boardSize, initialBoardState);
-        PrintBoard(board, boardSize);
+            switch (userChoice)
+            {
+                case 1:
+                    Console.WriteLine("Enter board size (leave blank for default): ");
+                    int boardSize = GetUserChoice();
+
+                    if (boardSize == 0)
+                    {
+                        boardSize = boardSizeDefault;
+                    }
+
+                    CreateBoard(board, boardSize);
+                    PrintBoard(board, boardSize);
+
+                    break;
+                case 2:
+                    Console.WriteLine("Enter board state in algebraic notation as a comma separated list, use '*' for black pieces like in 'a1*' (leave blank for default): ");
+                    string? userInput = Console.ReadLine();
+                    
+                    string[] boardState;
+
+                    if (string.IsNullOrWhiteSpace(userInput))
+                    {
+                        boardState = boardStateDefault;
+                    }
+                    else
+                    {
+                        boardState = GetBoardState(userInput);
+                    }
+
+                    CreateBoard(board, boardSizeDefault);
+                    PopulateBoard(board, boardSizeDefault, boardState);
+                    PrintBoard(board, boardSizeDefault);
+
+                    break;
+                case 3:
+                    Console.WriteLine("\nGoodbye!");
+                    exit = true; // This will exit the loop.
+
+                    break;
+                default:
+                    break; // If no valid choice was entered, break and re-enter the loop.
+            }
+        }
     }
 
-    public static void CreateBoard(char[,] board, int boardSize)
+    public static void PrintMenu()
     {
-        for (int i = 0; i < boardSize; i++)
+        Console.WriteLine("\nChessBoard menu: \n");
+        Console.WriteLine("1. Print board.");
+        Console.WriteLine("2. Print board with pieces.");
+        Console.WriteLine("3. Exit.");
+    }
+
+    public static int GetUserChoice()
+    {
+        int parsedInput;
+        bool success = int.TryParse(Console.ReadLine(), out parsedInput);
+
+        return parsedInput;
+    }
+
+    public static void CreateBoard(char[,] board, int boardSizeDefault)
+    {
+        for (int i = 0; i < boardSizeDefault; i++) // Loops over rows.
         {
-            for (int j = 0; j < boardSize; j++)
+            for (int j = 0; j < boardSizeDefault; j++) // Loops over columns.
             {
-                if ((i + j) % 2 == 0)
+                if ((i + j) % 2 == 0) // Switch between black and white squares while keeping previous rows in mind.
                 {
                     board[i, j] = '◼';
                 }
@@ -36,13 +95,13 @@
         }
     }
 
-    public static void PrintBoard(char[,] board, int boardSize)
+    public static void PrintBoard(char[,] board, int boardSizeDefault)
     {
-        string spacer = "  ";
+        string spacer = "  "; // A spacer to make the output look nicer.
 
-        for (int i = 0; i < boardSize; i++)
+        for (int i = 0; i < boardSizeDefault; i++)
         {
-            for (int j = 0; j < boardSize; j++)
+            for (int j = 0; j < boardSizeDefault; j++)
             {
                 Console.Write(board[i, j] + spacer);
             }
@@ -51,10 +110,47 @@
         }
     }
 
+    public static void PopulateBoard(char[,] board, int boardSizeDefault, string[] boardState)
+    {
+        (int, int) square;
+        char piece;
+
+        foreach (string str in boardState)
+        {
+            // Check that the string is not shorter than the minimum length.
+            if (str.Length < 2)
+            {
+                Console.WriteLine($"Invalid notation: {str}");
+            }
+            else
+            {
+                square = ParseSquare(str);
+                piece = ParsePiece(str);
+
+                try
+                {
+                    board[square.Item1 - 1, square.Item2] = piece;
+                }
+                catch (System.Exception)
+                {
+                    Console.WriteLine($"Invalid notation: {str}");
+                }                
+            }
+
+        }
+    }
+
+    public static string[] GetBoardState(string pieceList)
+    {
+        string[] boardState = pieceList.Split(',');
+
+        return boardState;
+    }
+
     public static char ParsePiece(string str)
     {
         int length = str.Length;
-        char notation = str[0];
+        char notation = str[0]; // The piece will always be decided based on the first character.
         char piece;
 
         switch (notation)
@@ -114,6 +210,7 @@
                 }  
 
                 break;
+            // If no character matched the piece is considererd a pawn.
             default:
                 if (str[length - 1] == '*')
                 {
@@ -132,11 +229,10 @@
 
     public static (int, int) ParseSquare(string str)
     {
-        int file, rank;
-
+        int file, rank, fileNotationPos, rankNotationPos;
         int length = str.Length;
-        int fileNotationPos, rankNotationPos;
 
+        // Deal with varying string length
         if (str[length - 1] == '*')
         {
             fileNotationPos = length - 3;
@@ -182,22 +278,9 @@
                 break;
         }
 
+        // Count ranks from the bottom of the board
         rank = 9 - (rankNotation - '0');
 
         return (rank, file);
-    }
-
-    public static void PopulateBoard(char[,] board, int boardSize, string[] boardState)
-    {
-        (int, int) square;
-        char piece;
-
-        foreach (string str in boardState)
-        {
-            square = ParseSquare(str);
-            piece = ParsePiece(str);
-
-            board[square.Item1 - 1, square.Item2] = piece;
-        }
     }
 }
