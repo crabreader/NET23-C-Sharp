@@ -1,10 +1,13 @@
-﻿internal class Program
+﻿// Alexander Doja
+// NET23
+
+internal class Program
 {
     private static void Main(string[] args)
     {
         int boardSizeDefault = 8;
         string[] boardStateDefault = {"Ra1", "Nb1", "Bc1", "Qd1", "Ke1", "Bf1", "Ng1", "Rh1", "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "a7*", "b7*", "c7*", "d7*", "e7*", "f7*", "g7*", "h7*", "Ra8*", "Nb8*", "Bc8*", "Qd8*", "Ke8*", "Bf8*", "Ng8*", "Rh8*"};
-        char[,] board = new char[boardSizeDefault, boardSizeDefault]; // The chess board is a 2d array of characters.
+        char[,] board; // The chess board is a 2d array of characters.
 
 
         bool exit = false;
@@ -26,6 +29,8 @@
                         boardSize = boardSizeDefault;
                     }
 
+                    board = new char[boardSize, boardSize]; 
+
                     CreateBoard(board, boardSize);
                     PrintBoard(board, boardSize);
 
@@ -33,7 +38,7 @@
                 case 2:
                     Console.WriteLine("Enter board state in algebraic notation as a comma separated list, use '*' for black pieces like in 'a1*' (leave blank for default): ");
                     string? userInput = Console.ReadLine();
-                    
+
                     string[] boardState;
 
                     if (string.IsNullOrWhiteSpace(userInput))
@@ -45,8 +50,10 @@
                         boardState = GetBoardState(userInput);
                     }
 
+                    board = new char[boardSizeDefault, boardSizeDefault]; 
+
                     CreateBoard(board, boardSizeDefault);
-                    PopulateBoard(board, boardSizeDefault, boardState);
+                    PopulateBoard(board, boardState);
                     PrintBoard(board, boardSizeDefault);
 
                     break;
@@ -77,11 +84,11 @@
         return parsedInput;
     }
 
-    public static void CreateBoard(char[,] board, int boardSizeDefault)
+    public static void CreateBoard(char[,] board, int boardSize)
     {
-        for (int i = 0; i < boardSizeDefault; i++) // Loops over rows.
+        for (int i = 0; i < boardSize; i++) // Loops over rows.
         {
-            for (int j = 0; j < boardSizeDefault; j++) // Loops over columns.
+            for (int j = 0; j < boardSize; j++) // Loops over columns.
             {
                 if ((i + j) % 2 == 0) // Switch between black and white squares while keeping previous rows in mind.
                 {
@@ -95,13 +102,13 @@
         }
     }
 
-    public static void PrintBoard(char[,] board, int boardSizeDefault)
+    public static void PrintBoard(char[,] board, int boardSize)
     {
         string spacer = "  "; // A spacer to make the output look nicer.
 
-        for (int i = 0; i < boardSizeDefault; i++)
+        for (int i = 0; i < boardSize; i++)
         {
-            for (int j = 0; j < boardSizeDefault; j++)
+            for (int j = 0; j < boardSize; j++)
             {
                 Console.Write(board[i, j] + spacer);
             }
@@ -110,7 +117,7 @@
         }
     }
 
-    public static void PopulateBoard(char[,] board, int boardSizeDefault, string[] boardState)
+    public static void PopulateBoard(char[,] board, string[] boardState)
     {
         (int, int) square;
         char piece;
