@@ -5,41 +5,65 @@
         private static void Main(string[] args)
         {
             Random random = new Random();
-            int number = random.Next(1, 20);
-            int userGuess;
-            bool guessed = false;
+            int number, userGuess, difficulty, maxGuesses;
+            bool guessed, exit;
 
-            Console.WriteLine("Välkommen! Jag tänker på ett nummer. Kan du gissa vilket? Du får fem försök.");
+            maxGuesses = 5;
+            exit = false;
 
-            for (int i = 0; (i < 5) && !guessed; i++)
+            Console.WriteLine("Välkommen! Välj din svårighetsgrad (ange ett nummer, standard är 1): ");
+            difficulty = GetUserInput();
+
+            if (difficulty <= 0)
             {
-                userGuess = GetUserGuess();
+                difficulty = 1;
+            }
+           
+            while (!exit)
+            {
+                number = random.Next(1, 5 * difficulty);
+                guessed = false;
 
-                if (GuessIsCorrect(number, userGuess))
+                Console.WriteLine("Jag tänker på ett nummer. Kan du gissa vilket? Du får fem försök: ");
+
+                for (int i = 0; (i < maxGuesses) && !guessed; i++)
                 {
-                    guessed = true;
-                    Console.WriteLine("Wohoo! Du klarade det!");
-                }
-                else
-                {
-                    if (userGuess < number)
+                    userGuess = GetUserInput();
+
+                    if (GuessIsCorrect(number, userGuess))
                     {
-                        Console.WriteLine("Tyvärr, du gissade för lågt!");
+                        guessed = true;
+                        Console.WriteLine("Wohoo! Du klarade det!");
                     }
                     else
                     {
-                        Console.WriteLine("Tyvärr, du gissade för högt!");
+                        if (userGuess < number)
+                        {
+                            Console.WriteLine("Tyvärr, du gissade för lågt!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Tyvärr, du gissade för högt!");
+                        }
                     }
                 }
-            }
 
-            if (!guessed)
-            {
-                Console.WriteLine("Tyvärr, du lyckades inte gissa talet på fem försök!");
+                if (!guessed)
+                {
+                    Console.WriteLine("\nTyvärr, du lyckades inte gissa talet på fem försök!");
+                }
+
+                Console.WriteLine("Spela igen? (y/n): ");
+                string? userChoice = Console.ReadLine();
+
+                if (userChoice == "n")
+                {
+                    exit = true;
+                }
             }
         }
 
-        public static int GetUserGuess()
+        public static int GetUserInput()
         {
             int parsedInput;
             bool success = int.TryParse(Console.ReadLine(), out parsedInput);
