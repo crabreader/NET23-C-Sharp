@@ -58,5 +58,11 @@
         {
             Console.WriteLine("Name: {0} {1}", _firstName, _lastName);
         }
+
+        // Destructor
+        // ~Customer()
+        // {
+        //    
+        // }
     }
 }
