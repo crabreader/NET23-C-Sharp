@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace employeeStack
+﻿namespace employeeStack
 {
     internal class Program
     {
