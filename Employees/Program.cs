@@ -84,6 +84,8 @@ namespace employeeStack
                 Console.WriteLine("e2 object does not exist in the list");
             }
 
+            Console.WriteLine("-------------------------------");
+
             Employee? needle = employeeList.Find(x => x._gender == "Female");
 
             if (needle != null)
