@@ -1,4 +1,4 @@
-﻿namespace employeeStack
+﻿namespace Employees
 {
     internal class Program
     {
